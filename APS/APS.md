@@ -220,5 +220,80 @@ def diffWaysCalculate(input_data):
 
 
 
+## 4. DP
 
+| 알고리즘         | 풀이 가능한 문제들의 특징                  | 풀이 가능한 문제 및 알고리즘                                 |
+| ---------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| DP               | - 최적 부분 구조<br />- 중복된 하위 문제들 | - 0~1 배낭 문제<br />- 피보나치 수열<br />- 다익스트라 알고리즘 |
+| Greedy           | - 최적 부분 구조<br />- 탐욕 선택 속성     | - 분할 가능 배낭 문제<br />- 다익스트라 알고리즘             |
+| Divide & Conquer | - 최적 부분 구조                           | - 병합 정렬<br />- 퀵 정렬                                   |
+
+- 최적 부분 구조
+
+  서울에서 부산을 가려고 한다. 서울에서 대구가는 경로 중 최적의 경로의 길이 + 대구에서 부산에 가는 경로 중 최적의 경로의 길이를 더하면 서울에서 부산까지 가는 경로의 최소 거리가 나온다. 만약 서울에서 부산으로 직통도로가 개설된다면 더 이상 최적 부분 구조가 아니므로, DP와 Greedy 둘 다 적용이 불가능하다.
+
+- DP 방법론은 크게 상향식과 하향식으로 나뉜다. 일반적으로 상향식을 타뷸레이션, 하향식을 메모이제이션이라고 부른다.
+  - 타뷸레이션 : 작은 문제의 정답을 이용해 큰 문제의 정답을 풀어나간다.
+  - 메모이제이션 : 하위 문제에 대한 정답을 계산했는지 확인해가며 문제를 풀어나간다.
+
+
+
+### 4.1. 피보나치수열
+
+```python
+def fibo(n):
+    if n <= 1:
+        return n
+    else:
+        return fibo(n - 1) + fibo(n - 2)
+
+# 타뷸레이션
+def fibo(n):
+    dp[0] = 0
+    dp[1] = 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+
+# 메모이제이션
+def fibo(n):
+    if n <= 1:
+        return n
+    if dp[n]:
+        return dp[n]
+    dp[n] = fibo(n - 1) + fibo(n - 2)
+    return dp[n]
+```
+
+
+
+### 4.2. 배낭문제
+
+```python
+cargo = [[4, 12], [2, 1], [10, 4], [1, 1], [2, 2]]
+def greedy_knapsack(cargo):
+    capacity = 15
+    pack = []
+    # 짐 갯수 : 5 + 1
+    # 저장 가능한 용량 : 15 + 1
+    # 6 x 16 배열 생성됨
+    # 1열 전체, 1행 전체는 0으로 채워진다.
+    for i in range(len(cargo) + 1):
+        pack.append([])
+        for c in range(capacity + 1):
+            if i == 0 or c == 0:
+                pack[i].append(0)
+            elif cargo[i - 1][1] <= c:
+                pack[i].append(
+                    max(
+                        cargo[i - 1][0] + pack[i - 1][c - cargo[i - 1][1]],
+                        pack[i - 1][c]
+                    ))
+            else:
+                pack[i].append(pack[i - 1][c])
+                
+	return pack[-1][-1]
+    
+    
+```
 
